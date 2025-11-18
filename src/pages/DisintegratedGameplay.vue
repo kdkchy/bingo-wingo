@@ -8,7 +8,8 @@ import JSConfetti from "js-confetti";
 let jsConfetti: JSConfetti | null = null;
 
 onMounted(() => {
-  jsConfetti = new JSConfetti();
+  const canvas = document.getElementById("topCanvas") as HTMLCanvasElement;
+  jsConfetti = new JSConfetti({ canvas });
 });
 
 const fireConfetti = () => {
@@ -33,65 +34,70 @@ const shuffledArray = ref(
 );
 const matrix = ref(Array.from({ length: 5 }, () => Array(5).fill(0)));
 
-const handleNumberClick = (val: any) => {
+const rowCount = ref([0, 0, 0, 0, 0]);
+const colCount = ref([0, 0, 0, 0, 0]);
+const diag1Count = ref(0);
+const diag2Count = ref(0);
+
+const wins = ref(0);
+
+// ---- When number clicked ----
+const handleNumberClick = (val: number) => {
+  if (shuffledArray.value[val].clicked) return;
+
   shuffledArray.value[val].clicked = true;
 
-  const row = Math.floor(val / 5);
-  const col = val % 5;
+  const r = Math.floor(val / 5);
+  const c = val % 5;
 
-  matrix.value[row][col] = 1;
+  matrix.value[r][c] = 1;
+
+  updateCounts(r, c, 1);
 
   checkWin();
 };
-const wins = ref(0);
+
+const updateCounts = (r: number, c: number, value: number) => {
+  if (value === 1) {
+    rowCount.value[r]++;
+    colCount.value[c]++;
+
+    if (r === c) diag1Count.value++;
+    if (r + c === 4) diag2Count.value++;
+  }
+};
+const checkWin = () => {
+  wins.value = 0;
+
+  // row / col
+  wins.value += rowCount.value.filter((x) => x === 5).length;
+  wins.value += colCount.value.filter((x) => x === 5).length;
+
+  // diagonals
+  if (diag1Count.value === 5) wins.value++;
+  if (diag2Count.value === 5) wins.value++;
+
+  if (wins.value === 5) fireConfetti();
+};
 
 const handleRestart = () => {
   wins.value = 0;
+
+  // reset matrix
   matrix.value = Array.from({ length: 5 }, () => Array(5).fill(0));
-  shuffledArray.value = createBoard.value.sort(() => 0.5 - Math.random());
-  shuffledArray.value.map((newArray) => {
-    newArray.clicked = false;
-  });
-};
 
-const checkWin = () => {
-  const m = matrix.value;
-  wins.value = 0;
+  // reset counters
+  rowCount.value = [0, 0, 0, 0, 0];
+  colCount.value = [0, 0, 0, 0, 0];
+  diag1Count.value = 0;
+  diag2Count.value = 0;
 
-  for (let r = 0; r < 5; r++) {
-    if (m[r].every((x) => x === 1)) {
-      wins.value++;
-    }
-  }
+  // reset board
+  shuffledArray.value = createBoard.value
+    .map((i) => ({ ...i }))
+    .sort(() => Math.random() - 0.5);
 
-  for (let c = 0; c < 5; c++) {
-    let full = true;
-    for (let r = 0; r < 5; r++) {
-      if (m[r][c] !== 1) {
-        full = false;
-        break;
-      }
-    }
-    if (full) wins.value++;
-  }
-
-  let diag1 = true;
-  for (let i = 0; i < 5; i++) {
-    if (m[i][i] !== 1) diag1 = false;
-  }
-  if (diag1) wins.value++;
-
-  let diag2 = true;
-  for (let i = 0; i < 5; i++) {
-    if (m[i][4 - i] !== 1) diag2 = false;
-  }
-  if (diag2) wins.value++;
-
-  if (wins.value === 5) {
-    fireConfetti();
-  }
-
-  return wins.value === 5;
+  shuffledArray.value.forEach((x) => (x.clicked = false));
 };
 </script>
 
@@ -108,7 +114,7 @@ const checkWin = () => {
         pointer-events: none;
       "
     ></canvas>
-    <!-- <button @click="fireConfetti">Fire Confetti</button> -->
+    <button @click="fireConfetti">Fire Confetti</button>
     <span>Disintegrated Gameplay</span>
     <h2>Bingo Selawe</h2>
 
