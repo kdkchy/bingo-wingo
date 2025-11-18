@@ -17,16 +17,8 @@ onMounted(() => {
 const fireConfetti = () => {
   jsConfetti?.addConfetti({
     emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
-    emojiSize: 10,
-    confettiNumber: 200,
-    confettiColors: [
-      "#ff0a54",
-      "#ff477e",
-      "#ff7096",
-      "#ff85a1",
-      "#fbb1bd",
-      "#f9bec7",
-    ],
+    emojiSize: 20,
+    confettiNumber: 900,
   });
 };
 
