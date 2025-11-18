@@ -14,8 +14,8 @@ onMounted(() => {
 const fireConfetti = () => {
   jsConfetti?.addConfetti({
     emojis: ["WINNER!"],
-    emojiSize: 500,
-    confettiNumber: 30,
+    emojiSize: 100,
+    confettiNumber: 100,
     confettiColors: [
       "#ff0a54",
       "#ff477e",
@@ -47,6 +47,7 @@ const wins = ref(0);
 
 const handleRestart = () => {
   wins.value = 0;
+  matrix.value = Array.from({ length: 5 }, () => Array(5).fill(0));
   shuffledArray.value = createBoard.value.sort(() => 0.5 - Math.random());
   shuffledArray.value.map((newArray) => {
     newArray.clicked = false;
@@ -96,6 +97,18 @@ const checkWin = () => {
 
 <template>
   <div class="text-center">
+    <canvas
+      id="topCanvas"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      "
+    ></canvas>
+    <!-- <button @click="fireConfetti">Fire Confetti</button> -->
     <span>Disintegrated Gameplay</span>
     <h2>Bingo Selawe</h2>
 
