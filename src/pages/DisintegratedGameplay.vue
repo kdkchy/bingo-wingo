@@ -14,8 +14,8 @@ onMounted(() => {
 const fireConfetti = () => {
   jsConfetti?.addConfetti({
     emojis: ["WINNER!"],
-    emojiSize: 80,
-    confettiNumber: 20,
+    emojiSize: 500,
+    confettiNumber: 30,
     confettiColors: [
       "#ff0a54",
       "#ff477e",
@@ -43,15 +43,16 @@ const handleNumberClick = (val: any) => {
 
   checkWin();
 };
+const wins = ref(0);
 
 const handleRestart = () => {
+  wins.value = 0;
   shuffledArray.value = createBoard.value.sort(() => 0.5 - Math.random());
   shuffledArray.value.map((newArray) => {
     newArray.clicked = false;
   });
 };
 
-const wins = ref(0);
 const checkWin = () => {
   const m = matrix.value;
   wins.value = 0;
