@@ -5,6 +5,8 @@ import Statistic from "../components/Play/Statistic.vue";
 import Button from "primevue/button";
 import JSConfetti from "js-confetti";
 
+const rowIndex = (row: number, col: number) => 5 * (row - 1) + (col - 1);
+
 let jsConfetti: JSConfetti | null = null;
 
 onMounted(() => {
@@ -41,7 +43,6 @@ const diag2Count = ref(0);
 
 const wins = ref(0);
 
-// ---- When number clicked ----
 const handleNumberClick = (val: number) => {
   if (shuffledArray.value[val].clicked) return;
 
@@ -69,11 +70,9 @@ const updateCounts = (r: number, c: number, value: number) => {
 const checkWin = () => {
   wins.value = 0;
 
-  // row / col
   wins.value += rowCount.value.filter((x) => x === 5).length;
   wins.value += colCount.value.filter((x) => x === 5).length;
 
-  // diagonals
   if (diag1Count.value === 5) wins.value++;
   if (diag2Count.value === 5) wins.value++;
 
@@ -83,16 +82,13 @@ const checkWin = () => {
 const handleRestart = () => {
   wins.value = 0;
 
-  // reset matrix
   matrix.value = Array.from({ length: 5 }, () => Array(5).fill(0));
 
-  // reset counters
   rowCount.value = [0, 0, 0, 0, 0];
   colCount.value = [0, 0, 0, 0, 0];
   diag1Count.value = 0;
   diag2Count.value = 0;
 
-  // reset board
   shuffledArray.value = createBoard.value
     .map((i) => ({ ...i }))
     .sort(() => Math.random() - 0.5);
@@ -114,29 +110,27 @@ const handleRestart = () => {
         pointer-events: none;
       "
     ></canvas>
-    <button @click="fireConfetti">Fire Confetti</button>
+    <!-- <button @click="fireConfetti">Fire Confetti</button> -->
     <span>Disintegrated Gameplay</span>
     <h2>Bingo Selawe</h2>
 
     <div class="card">
       <div
-        v-for="index in 5"
-        :key="index"
-        class="flex flex-wrap justify-content-center card-container blue-container gap-2 mb-2"
+        v-for="row in 5"
+        :key="row"
+        class="flex justify-content-center gap-2 mb-2"
       >
-        <div v-for="innerIndex in 5" :key="innerIndex">
+        <div v-for="col in 5" :key="col">
           <Button
-            v-if="shuffledArray[5 * (index - 1) + innerIndex - 1].clicked"
-            severity="secondary"
-            @click="handleNumberClick(5 * (index - 1) + innerIndex - 1)"
-            class="transition-transform transition-duration-500 w-5rem h-5rem text-white font-bold flex align-items-center justify-content-center"
-            >{{ shuffledArray[5 * (index - 1) + innerIndex - 1].value }}
-          </Button>
-          <Button
-            v-else
-            @click="handleNumberClick(5 * (index - 1) + innerIndex - 1)"
-            class="transition-transform transition-duration-500 w-5rem h-5rem text-white font-bold flex align-items-center justify-content-center"
-            >{{ shuffledArray[5 * (index - 1) + innerIndex - 1].value }}
+            :severity="
+              shuffledArray[rowIndex(row, col)].clicked
+                ? 'secondary'
+                : undefined
+            "
+            @click="handleNumberClick(rowIndex(row, col))"
+            class="flex align-items-center justify-content-center font-bold text-white transition-transform transition-duration-500 w-4rem h-4rem /* mobile */ sm:w-5rem sm:h-5rem /* tablet */ lg:w-6rem lg:h-6rem /* desktop */"
+          >
+            {{ shuffledArray[rowIndex(row, col)].value }}
           </Button>
         </div>
       </div>
