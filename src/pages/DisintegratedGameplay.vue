@@ -16,9 +16,9 @@ onMounted(() => {
 
 const fireConfetti = () => {
   jsConfetti?.addConfetti({
-    emojis: ["BINGO!", "WOHO!", "wohoo!"],
-    emojiSize: 40,
-    confettiNumber: 100,
+    emojis: ["🌈", "⚡️", "💥", "✨", "💫", "🌸"],
+    emojiSize: 10,
+    confettiNumber: 200,
     confettiColors: [
       "#ff0a54",
       "#ff477e",
@@ -111,7 +111,7 @@ const handleRestart = () => {
         z-index: 999;
       "
     ></canvas>
-    <button @click="fireConfetti">Fire Confetti</button>
+    <!-- <button @click="fireConfetti">Fire Confetti</button> -->
     <span>Disintegrated Gameplay</span>
     <h2>Bingo Selawe</h2>
 
